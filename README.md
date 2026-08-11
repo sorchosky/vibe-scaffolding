@@ -36,16 +36,37 @@ Then:
 5. Start Claude Code in the project root, let it read `CLAUDE.md` + `docs/`,
    confirm the plan, then let it run.
 
+## Choosing a branch model
+
+Set the **Integration branch** line in `CLAUDE.md` at project start. Everything
+else in the contract follows from it.
+
+| | Two-tier (default) | Three-tier |
+|---|---|---|
+| Integration branch | `main` | `dev` |
+| Features merge into | `main` | `dev` |
+| What ships to prod | every merge | a separate `dev` → `main` release PR |
+| Use when | young, solo, low-stakes — "merged" and "live" can mean the same thing | production has real users, or you want features to land and settle before any of them ship |
+
+Three-tier costs one extra PR per release and buys you a place for work to
+accumulate without going live. Start two-tier; add `dev` when shipping every
+merge starts to feel like a risk rather than a feature.
+
 ## Starting a new feature
 
 ```bash
-scripts/new-feature.sh <feature-slug>
+scripts/new-feature.sh <slug> [base-branch]
 ```
 
 Creates a sibling worktree (`../<project>-worktrees/<slug>`) on branch
-`feature/<slug>`, cut from latest `main`. Work there — including running
-Claude Code there — without disturbing `main` or other in-flight features.
-Squash-merge via PR when it's done, then `git worktree remove` to clean up.
+`feature/<slug>`, cut from latest `main` — or from `[base-branch]` if given, which
+is how three-tier projects cut from `dev`. Set `BASE_BRANCH=dev` in your shell to
+avoid passing it every time. Prefix the slug (`fix/...`, `docs/...`) to get a
+branch of that type instead of a feature branch.
+
+Work in the worktree — including running Claude Code there — without disturbing
+the integration branch or other in-flight features. Squash-merge via PR when it's
+done, then `git worktree remove` to clean up.
 
 ## Files in this template
 
@@ -57,7 +78,7 @@ Squash-merge via PR when it's done, then `git worktree remove` to clean up.
 | `docs/DECISIONS_LOG_TEMPLATE.md` | Becomes `docs/DECISIONS.md`. Append-only log of judgment calls made mid-build. |
 | `.claude/settings.json` | Claude Code permission rules — what it can do without asking vs. what requires a human in the loop. Verify against current Claude Code docs periodically; the permission schema evolves. |
 | `scripts/init-project.sh` | Scaffolds a new project from this template. |
-| `scripts/new-feature.sh` | Creates a worktree + branch for a new feature. |
+| `scripts/new-feature.sh` | Creates a worktree + branch for a new feature, cut from `main` or a base branch you pass. |
 | `vercel.json` | Deploy defaults for a Vite app. |
 
 ## Evolving this template
