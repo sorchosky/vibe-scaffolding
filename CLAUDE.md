@@ -102,6 +102,8 @@ are the same either way.
 - Responsive at mobile + desktop widths at minimum
 - Keyboard-navigable, visible focus states, obvious touch targets (44px min)
 - No hardcoded secrets — use `.env.local`, confirm it's gitignored
+- Frontend UI changes pass a design-taste check (`/design-taste-frontend` or
+  equivalent) before calling the work done — no boilerplate-looking layouts
 - Update `docs/DECISIONS.md` if you made a call the PRD didn't specify
 
 ## Voice for anything user-facing in the PR/commit trail
